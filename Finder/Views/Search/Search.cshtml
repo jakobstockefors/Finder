@@ -1,0 +1,16 @@
+﻿@model Finder.Models.SearchModel
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+}
+
+<h2 class="col-md-offset-5">Search</h2>
+
+<ul>
+    @foreach (var user in Model.Matches)
+    {
+        <li class="col-md-offset-4 matchList">
+            @Html.ActionLink(user.FirstName + " " + user.LastName, "Profile", "SignedIn", new { username = user.UserName }, new { @class = "h2" })
+        </li>
+    }  
+</ul>

@@ -1,0 +1,117 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+#searchButton {
+    padding: 5px;  
+    margin-top: 3px;
+    margin-left: 2px;
+    border-radius: 6px;
+}
+
+#friendshipButton {
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.randomUser {
+    padding: 10px;
+}
+
+.randomUserName {
+    padding: 5px;
+}
+
+.ProfileInfoText {
+    font-weight : bold;
+}
+
+.smallCss {
+    font-size : 16px;
+    color : black;
+    margin-left: 5px;
+}
+
+.profileName {
+    width:auto;
+    font-family:'Times New Roman'
+}
+
+.navbar-form{
+    width: 400px;
+}
+
+.matchList {
+    font-family : 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size : 20px;
+    list-style: none;
+    margin-top: 25px;
+}
+
+.imgClass {
+    margin-right: 10px;
+}
+
+#matchH2 {
+    margin-bottom : 40px;
+}
+
+.pFriendshipTable {
+    float: left;
+    clear:both;
+    margin-bottom:30px;
+}
+
+.aFriendshipTable {
+    float: left;
+    clear:both;
+    margin-bottom:30px;
+}
+
+.cFriendshipTable {
+    float: left;
+    clear:both;
+    margin-bottom:30px;
+}
+
+#listStyleGen {
+    list-style: none;
+}
+
+#friendshipTitle {
+    margin-top: 40px;
+}
+
+.friendReqCount {
+    float: left;
+    margin-top: 18px;
+}
+
+#removeTrMargin {
+    padding-left: 0px;
+}
+
+hr {
+    border-top: 1px solid black;
+}

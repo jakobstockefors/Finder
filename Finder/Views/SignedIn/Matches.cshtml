@@ -1,0 +1,19 @@
+﻿@model Finder.Models.MatchesModel
+@{
+    ViewBag.Title = "Matches";
+    Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+}
+
+<h2 id="matchH2"class="col-md-offset-5">Matches</h2>
+
+
+
+<ul class="col-md-offset-3">
+    @foreach (var user in Model.Matches)
+    {
+        if (user.UserName != User.Identity.Name)
+        {
+            <li class="matchList" id="matchListName"><img class="imgClass" src="~/Images/@user.Picture" height=100 width=200 />@Html.ActionLink(user.FirstName + " " + user.LastName, "Profile", "SignedIn", new { username = user.UserName }, new { })</li>
+        }
+    }
+</ul>

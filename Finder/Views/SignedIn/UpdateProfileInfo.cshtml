@@ -1,0 +1,41 @@
+﻿@model Finder.Models.UserModel
+
+@{
+    ViewBag.Title = "Update profile";
+    Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+}
+
+<h2>Update</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.user.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.user.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.user.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>  
+        <div class="form-group">
+            @Html.LabelFor(model => model.user.Searchable, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.user.Searchable)
+                    @Html.ValidationMessageFor(model => model.user.Searchable, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Update" class="btn btn-default"  />
+            </div>
+        </div>
+    </div>
+}

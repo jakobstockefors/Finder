@@ -1,0 +1,48 @@
+﻿@model Finder.Models.UserModel
+@{
+    ViewBag.Title = "AccountSettings";
+    if(Model.user.Active)
+    {
+        Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+    }
+    if(!Model.user.Active)
+    {
+        Layout = "~/Views/Shared/Layout_Deactivated.cshtml";
+    }
+
+}
+
+<h2 class="col-md-offset-5">Account Settings</h2>
+
+<div class="col-md-offset-5 matchList">
+    @Html.ActionLink("Update profile page", "UpdateProfileInfo")
+</div>
+<div class="col-md-offset-5 matchList">
+    @Html.ActionLink("Update personal info", "UpdatePersonalInfo")
+</div>
+<div class="col-md-offset-5 matchList">
+    @Html.ActionLink("Change password", "ChangePassword")
+</div>
+<div class="col-md-offset-5 matchList">
+    @Html.ActionLink("Change profile picture", "ChangeProfilePicture")
+</div>
+<div id="placeMarginBotDiv" class="col-md-offset-5 matchList">
+    @{
+        string text = "";
+        bool changeStatus;
+
+        if (Model.user.Active)
+        {
+            text = "Deactivate your account";
+            changeStatus = false;
+        }
+        else
+        {
+            text = "Activate your account";
+            changeStatus = true;
+        }
+        @Html.ActionLink(text, "ChangeAccountStatus", new { username = Model.user.UserName, status = changeStatus })
+    }
+    
+</div>
+

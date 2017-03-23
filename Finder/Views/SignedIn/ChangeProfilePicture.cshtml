@@ -1,0 +1,24 @@
+﻿@model Finder.Models.UserModel
+@{
+    ViewBag.Title = "ChangeProfilePicture";
+    Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+}
+
+<div>
+    @using (Html.BeginForm("Upload", "SignedIn", new { username = Model.user.UserName }, FormMethod.Post,
+                        new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <fieldset>
+            <legend>Change profile picture</legend>
+            <div class="editor-field">
+                @Html.TextBox("file", "", new { type = "file" })
+            </div>
+            <div class="editor-field">
+                <input type="submit" value="Upload" />
+            </div>
+        </fieldset>
+    }
+</div>
+

@@ -1,0 +1,196 @@
+﻿@model Finder.Models.UserModel
+@using Data
+@using Data.Repositories
+@{
+    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="information_div col-md-3">
+        <h2 class="col-md-3 profileName">@Model.user.FirstName @Model.user.LastName</h2>
+        <img src="~/Images/@Model.user.Picture" height=100 width=200 />
+        <h4 class="ProfileInfoText">Username:<small class="smallCss">@Model.user.UserName</small></h4>
+        <h4 class="ProfileInfoText">Age: <small class="smallCss">@Model.user.Age</small></h4>
+        <div id="visitDiv">
+
+        </div>
+        @if (!Model.user.Gender.Equals("Male"))
+        {
+            <h4 class="ProfileInfoText">Sex: <small class="smallCss">Female</small></h4>
+        }
+        else
+        {
+            <h4 class="ProfileInfoText">Sex: <small class="smallCss">Male</small></h4>
+        }
+        @if (!Model.user.InterestMen)
+        {
+            if (!Model.user.InterestWomen)
+            {
+                <h4 class="ProfileInfoText">Not loking for seks</h4>
+            }
+            else
+            {
+                <h4 class="ProfileInfoText">Looking for women!</h4>
+            }
+        }
+        @if (Model.user.InterestMen)
+        {
+            if (!Model.user.InterestWomen)
+            {
+                <h4 class="ProfileInfoText">Looking for men!</h4>
+            }
+            else
+            {
+                <h4 class="ProfileInfoText">Looking for both men and women!</h4>
+            }
+        }
+        <h4 class="ProfileInfoText">Description: <small class="smallCss">@Model.user.Description</small></h4>
+
+            @if (Model.user.UserName.Equals(User.Identity.Name))
+            {
+
+                @Html.ActionLink("Serialize my profile", "SerializeProfile", "SignedIn", new { username = User.Identity.Name }, new { })
+            }
+            else
+            {
+                if (Model.Matching)
+                {
+                    <h3>This person is a match for you!</h3>
+                }
+                else
+                {
+                    <h3>This person is NOT a match for you!</h3>
+                }
+
+                var context = new FinderContext();
+                var friendRep = new FriendshipRepository(context);
+                var userRep = new UserRepository(context);
+                var user = User.Identity.Name;
+                var profileUser = Model.user.UserName;
+                if (friendRep.CheckIfFriends(user, profileUser))
+                {
+                    <div>
+                        @Html.ActionLink("Remove from friends", "RemoveFriendship", "Friendship", new { senderUser = User.Identity.Name, recieverUser = Model.user.UserName }, new { })
+                    </div>
+                }
+                else if (friendRep.CheckIfFriendrequestPending(user, profileUser))
+                {
+                    <div>
+                        @Html.ActionLink("Remove friend request", "RemoveFriendship", "Friendship", new { senderUsername = User.Identity.Name, recieverUsername = Model.user.UserName }, new { })
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @Html.ActionLink("Send friend request", "SendFriendRequest", "Friendship", new { senderUser = User.Identity.Name, recieverUser = Model.user.UserName }, new { })
+                    </div>
+                }
+
+            }
+
+        <ul class="list-group" id="visits-list">
+            <h4>Last 5 visitors:</h4>
+            <div id="fiveLatest"></div>
+        </ul>
+    </div>
+
+}
+
+
+    <div class="form-group col-md-offset-4">
+        <h3>Post a message</h3>
+        <textarea rows="5" class="form-control" name="description" id ="textareaMessage"></textarea>
+    </div>
+    <div class="form-group col-md-offset-4">
+        <button id="btn-post" class="btn btn-primary">Post</button>
+    </div>
+
+@{
+    if (Model.user.RecievedPosts != null)
+    {
+        var posts = Model.user.RecievedPosts.Where(x => x.Author.Active).OrderByDescending(x => x.Date).ToList();
+        foreach (var post in posts)
+        {
+            <div class="jumbotron col-md-offset-4">
+                <h3>From:</h3>
+                <h4>@post.Author.UserName</h4>
+                <h3>Date:</h3>
+                <h4>@post.Date</h4>
+                <h3>Message:</h3>
+                <h4>@post.Content</h4>
+                <br />
+                @if (Model.user.UserName.Equals(User.Identity.Name))
+                {
+                    <button id="@post.PostId" class="btn btn-danger delete-post" onclick="deletePost('@post.PostId')">Delete</button>
+                <br />
+                }
+            </div>
+            
+            
+            }
+        }
+    }
+
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(function() {
+            $("#btn-post").click(function () {
+                var message = $("#textareaMessage").val();
+                if (message != "") {
+                    var reciever = '@Model.user.UserName';
+                    $.post("../API/Post/PostMessage?message=" + message + "&reciever=" + reciever,
+                        function () {
+                            alert("Succesfully created post!");
+                            location.reload();
+                        });
+                }
+                else
+                {
+                    confirm("Message cannot be empty");
+                }
+                });
+        });
+        </script>
+
+    <script>
+        function deletePost(postId) {
+            bootbox.confirm("Are you sure you want to delete this post?",
+                function (ok) {
+                    if (ok) {
+                        window.location.href = "DeletePost?postId=" + postId;
+                    }
+                });
+        }
+    </script>
+        
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "/Api/Visitor/GetVisitors",
+                type: "Post",
+                data: JSON.stringify(["@Model.user.UserName"]),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    var i = 0;
+                    $.each(data, function () {
+                        $("#fiveLatest").append("<h2>" + data[i].nameof + "</h2>");
+                        i++;
+                    });
+                },
+                error: function () { alert("Failed to get last 5 visits"); }
+            });
+        });
+    </script>
+}
+
+
+

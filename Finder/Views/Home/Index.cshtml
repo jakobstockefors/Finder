@@ -1,0 +1,40 @@
+﻿@model Finder.Models.HomeModel
+@{
+    ViewBag.Title = "Home Page";
+    if(User.Identity.IsAuthenticated)
+    {
+        Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+    }
+}
+
+<div class="jumbotron">
+    <h1>@Finder.Resources.Home.Welcometxt</h1>
+    <p class="lead">@Finder.Resources.Home.Taglinetxt</p>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        @Html.ActionLink("Sign up now!", "Register", new { }, new { @class = "btn btn-primary btn-lg" })
+    }
+    
+</div>
+
+<div class="jumbotron container">
+    <h2>@Finder.Resources.Home.RandomUserstxt</h2>
+    <ul class="list-unstyled jumbotron">
+        @if (Model.randomUsers != null)
+        {
+            foreach (var randomUser in Model.randomUsers)
+            {
+                <li class="col-md-3 randomUser"><img src="~/Images/@randomUser.Picture" height=100 width=200 />@Html.ActionLink(randomUser.FirstName + " " + randomUser.LastName, "Profile", "SignedIn", new { username = randomUser.UserName }, new { @class = "randomUserName"})</li>
+                
+            }
+        }
+    </ul>
+</div>
+
+<div class="jumbotron">
+    <ul>
+        <li> @Html.ActionLink("English", "Change", "Language", new { LanguageAbbrevation = "en" }, null)</li>
+        <li> @Html.ActionLink("Svenska", "Change", "Language", new { LanguageAbbrevation = "sv" }, null)</li>
+         
+    </ul>
+</div>

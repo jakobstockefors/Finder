@@ -1,0 +1,88 @@
+﻿@using Data
+@using Data.Repositories
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Finder</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Finder", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink(Finder.Resources.Home.Homebtn, "Index", "Home")</li>
+                    <li>@Html.ActionLink(Finder.Resources.Home.Profilebtn, "Profile", "SignedIn", new { username = User.Identity.Name }, new { @class = "" })</li>
+                    <li>@Html.ActionLink(Finder.Resources.Home.Matches, "Matches", "SignedIn")</li>
+                    <li>@Html.ActionLink(Finder.Resources.Home.Logoutbtn, "Logout", "SignedIn")</li>
+                    <li>
+                        @using (Html.BeginForm("Search", "Search", FormMethod.Post, new { @class = "navbar-form navbar-left" }))
+                        {
+                            <input name="search" id="userInput" type="text" class="form-control" placeholder="Search">
+                            <input type="submit" value="Search" id="searchButton" class="searchBtn">
+                        }
+                    </li>
+                    @{
+                        using (var context = new FinderContext())
+                        {
+                            var friendRep = new FriendshipRepository(context);
+                            var userRep = new UserRepository(context);
+                            var user = userRep.GetUserByUsername(User.Identity.Name);
+                            var requests = friendRep.GetAllPendingRecievedRequests(user);
+                            var count = requests.Count();
+                            if (count > 0)
+                            {
+                                <span class="badge friendReqCount">@count</span>
+                            }
+                            else
+                            {
+                                <span class="badge friendReqCount"></span>
+                            }
+                        }
+                    }
+                    <li>
+                        @Html.ActionLink(Finder.Resources.Home.Friendsbtn, "Friendship", "Friendship", new { username = User.Identity.Name, category = "Show all friends" }, new { @class = "" })
+                    </li>
+                    <li>
+                        @Html.ActionLink(Finder.Resources.Home.AccountSettingsbtn, "AccountSettings", "SignedIn", new { username = User.Identity.Name }, new { @class = "" })
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Finder</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+@*@section Scripts{
+    <script type="text/javascript">
+        $('#searchButton').click(function () {
+            var text = document.getElementsById("userInput").value;
+            $.post(window.location.href = "Search?search=" + text, 
+            function() {
+                location.reload();
+            });
+        })
+    </script>
+    }*@

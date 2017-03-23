@@ -1,0 +1,145 @@
+﻿@model Finder.Models.FriendshipsModel
+@using Data
+@using Data.Models.EF
+@using Data.Repositories
+@{
+    ViewBag.Title = "Friendship";
+    Layout = "~/Views/Shared/_Layout_SignedIn.cshtml";
+}
+
+@{ 
+    var context = new FinderContext();
+    var friendRep = new FriendshipRepository(context);
+}
+
+<div class="container">
+    <h2 id="friendshipTitle" class="col-md-4 col-md-offset-5">Friendship</h2>
+    <div class="container">
+        <table class="pFriendshipTable">
+            <tr>
+                <th>
+                    <h3>Friend requests:</h3>
+                </th>
+            </tr>
+            @if (Model.PendingRecieved != null)
+            {
+                foreach (var friend in Model.PendingRecieved)
+                {
+                    <tr>
+                        <td id="listStyleGen" class="matchList">@Html.ActionLink(friend.SenderUser.FirstName + " " + friend.SenderUser.LastName, "Profile", "SignedIn", new { username = friend.SenderUser.UserName }, null)</td>
+                        <td id="listStyleGen"><button id="friendshipButton" class="btn-default" onclick="location.href='@Url.Action("AcceptFriendRequest", "Friendship", new { senderUsername = friend.SenderUser.UserName, recieverUsername = friend.RecieverUser.UserName})'">Accept</button></td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+    <hr />
+    <div class="container">
+        <table class="cFriendshipTable">
+            <tr>
+                <th>
+                    <h3>Show friends in category</h3>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" id="categoryToDisplay">
+                        @{
+                            var allCategories = friendRep.GetAllCategories();
+                            foreach (var cat in allCategories)
+                            {
+                                if (cat != null && cat.CategoryName.Equals(Model.selectedCategory))
+                                {
+                                    <option selected="selected" value="@cat.CategoryName">@cat.CategoryName</option>
+                                }
+                                else
+                                {
+                                    <option value="@cat.CategoryName">@cat.CategoryName</option>
+                                }
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button id="friendshipButton" class="btn-default filter-btn">Filter</button>
+                </td>
+            </tr>
+        </table>
+        <table class="aFriendshipTable">
+            <tr>
+                <th id="removeTrMargin" class="col-md-3">
+                    <h3>Accepted friendships:</h3>
+                </th>
+                <th id="removeTrMargin" class="col-md-3">
+                    <h3>Remove friendship</h3>
+                </th>
+                <th id="removeTrMargin" class="col-md-3">
+                    <h3>Place friend in category</h3>
+                </th>
+            </tr>
+            @if (Model.Friendships != null)
+            {
+                foreach (var friendship in Model.Friendships)
+                {
+                    User friendToDisplay = friendship.RecieverUser;
+                    Category cat = friendship.RecieverCategory;
+                    if (friendship.RecieverUser.UserName == User.Identity.Name)
+                    {
+                        friendToDisplay = friendship.SenderUser;
+                        cat = friendship.RequesterCategory;
+                    }
+                    <tr>
+                        @if (cat.CategoryName.Equals(Model.selectedCategory) || Model.selectedCategory.Equals("Show all friends"))
+                    {
+                            <td class="matchList">
+                                @Html.ActionLink(friendToDisplay.FirstName + " " + friendToDisplay.LastName, "Profile", "SignedIn", new { username = friendToDisplay.UserName }, null)
+                            </td>
+                            <td>
+                                <button id="friendshipButton" class="btn-default" onclick="location.href='@Url.Action("RemoveFriendship", "Friendship", new { senderUsername = friendship.SenderUser.UserName, recieverUsername = friendship.RecieverUser.UserName})'">Remove</button>
+                            </td>
+                            <td>
+                                <select id="@friendToDisplay.UserName" class="form-control friendCategory">
+                                    @foreach (var category in context.Categories)
+                        {
+                            if (cat != null && category.CategoryName.Equals(cat.CategoryName))
+                            {
+                                            <option selected="selected" value="@category.CategoryName"> @category.CategoryName </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.CategoryName"> @category.CategoryName </option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</div>
+    @section Scripts
+            {
+        <script type="text/javascript">
+            $('.friendCategory').on('change', function () {
+                var friendUsername = this.id;
+                var catName = this.value;
+                var categoryFilter = document.getElementById("categoryToDisplay").value;
+                $.post(window.location.href = "ChangeCategory?category=" + catName + "&username=" + friendUsername + "&categoryFilter=" + categoryFilter,
+                    function () {
+                        location.reload();
+                    })
+            })
+
+            $(".filter-btn").on('click', function () {
+                var category = document.getElementById("categoryToDisplay").value;
+                console.log(category);
+                $.post(window.location.href = "FilterByCategory?category=" + category,
+        function () {
+            location.reload();
+        })
+            })
+        </script>
+
+    }
